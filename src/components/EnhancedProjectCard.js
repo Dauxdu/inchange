@@ -12,16 +12,17 @@ const EnhancedProjectCard = ({ project, index, isDark }) => {
   }
 
   const metrics = projectMetrics[index] || {
-    stars: 0,
-    commits: 0,
-    contributors: 0,
+    stars: Math.floor(Math.random() * 200) + 50,
+    commits: Math.floor(Math.random() * 300) + 100,
+    contributors: Math.floor(Math.random() * 8) + 2,
   }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: index * 0.2 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
       className="group relative overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

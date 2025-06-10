@@ -1,17 +1,23 @@
-import React, { useEffect, useState, useCallback } from "react"
-import { motion } from "framer-motion"
+import React, { useEffect, useState, useCallback, useRef } from "react"
+import { motion, useSpring } from "framer-motion"
 
 const MagneticCursor = ({ isDark }) => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
   const [cursorVariant, setCursorVariant] = useState("default")
+  const cursorRef = useRef(null)
 
-  // Debounce mouse movement for better performance
+  // Использование useSpring для более плавного следования курсора
+  const springConfig = { damping: 25, stiffness: 200, mass: 0.5 }
+  const mouseX = useSpring(0, springConfig)
+  const mouseY = useSpring(0, springConfig)
+
+  // Optimized throttle function
   const throttledMouseMove = useCallback(
     throttle((x, y) => {
-      setMousePosition({ x, y })
-    }, 16), // ~60fps
-    []
+      mouseX.set(x)
+      mouseY.set(y)
+    }, 8), // ~120fps for smoother movement
+    [mouseX, mouseY]
   )
 
   useEffect(() => {
@@ -23,11 +29,16 @@ const MagneticCursor = ({ isDark }) => {
     }
 
     const handleMouseOver = (e) => {
-      if (e.target.matches("button, a, .magnetic-element, .magnetic-button")) {
+      const target = e.target
+      const isInteractive = target.matches(
+        "button, a, .magnetic-element, .magnetic-button, [role='button']"
+      )
+
+      if (isInteractive) {
         setIsHovering(true)
-        if (e.target.matches(".magnetic-button")) {
+        if (target.matches(".magnetic-button")) {
           setCursorVariant("button")
-        } else if (e.target.matches("a")) {
+        } else if (target.matches("a")) {
           setCursorVariant("link")
         } else {
           setCursorVariant("hover")
@@ -36,22 +47,32 @@ const MagneticCursor = ({ isDark }) => {
     }
 
     const handleMouseOut = (e) => {
-      if (e.target.matches("button, a, .magnetic-element, .magnetic-button")) {
+      const target = e.target
+      const isInteractive = target.matches(
+        "button, a, .magnetic-element, .magnetic-button, [role='button']"
+      )
+
+      if (isInteractive) {
         setIsHovering(false)
         setCursorVariant("default")
       }
     }
 
     const handleMouseLeave = () => {
-      // Reset cursor when mouse leaves window
       setIsHovering(false)
       setCursorVariant("default")
     }
 
-    window.addEventListener("mousemove", mouseMove)
-    document.addEventListener("mouseover", handleMouseOver)
-    document.addEventListener("mouseout", handleMouseOut)
-    document.addEventListener("mouseleave", handleMouseLeave)
+    // Only add listeners if user has a mouse (not touch device)
+    const mediaQuery = window.matchMedia("(pointer: fine)")
+    if (mediaQuery.matches) {
+      window.addEventListener("mousemove", mouseMove, { passive: true })
+      document.addEventListener("mouseover", handleMouseOver, { passive: true })
+      document.addEventListener("mouseout", handleMouseOut, { passive: true })
+      document.addEventListener("mouseleave", handleMouseLeave, {
+        passive: true,
+      })
+    }
 
     return () => {
       window.removeEventListener("mousemove", mouseMove)
@@ -74,65 +95,68 @@ const MagneticCursor = ({ isDark }) => {
     }
   }
 
-  const variants = {
-    default: {
-      x: mousePosition.x - 8,
-      y: mousePosition.y - 8,
-      scale: 1,
-      backgroundColor: getOrangeColor("default"),
-      mixBlendMode: isDark ? "difference" : "multiply",
-    },
-    button: {
-      x: mousePosition.x - 16,
-      y: mousePosition.y - 16,
-      scale: 2,
-      backgroundColor: getOrangeColor("button"),
-      mixBlendMode: isDark ? "difference" : "multiply",
-    },
-    link: {
-      x: mousePosition.x - 12,
-      y: mousePosition.y - 12,
-      scale: 1.5,
-      backgroundColor: getOrangeColor("link"),
-      mixBlendMode: isDark ? "difference" : "multiply",
-    },
-    hover: {
-      x: mousePosition.x - 10,
-      y: mousePosition.y - 10,
-      scale: 1.3,
-      backgroundColor: getOrangeColor("hover"),
-      mixBlendMode: isDark ? "difference" : "multiply",
-    },
+  const getCursorSize = (variant) => {
+    switch (variant) {
+      case "button":
+        return 32
+      case "link":
+        return 24
+      case "hover":
+        return 20
+      default:
+        return 16
+    }
   }
+
+  const size = getCursorSize(cursorVariant)
 
   return (
     <>
+      {/* Main cursor dot */}
       <motion.div
-        className="fixed top-0 left-0 w-4 h-4 rounded-full pointer-events-none z-50 hidden md:block"
-        variants={variants}
-        animate={cursorVariant}
+        ref={cursorRef}
+        className="fixed top-0 left-0 pointer-events-none z-50 hidden md:block rounded-full"
+        style={{
+          width: size,
+          height: size,
+          backgroundColor: getOrangeColor(cursorVariant),
+          mixBlendMode: isDark ? "difference" : "multiply",
+          x: mouseX,
+          y: mouseY,
+          translateX: -size / 2,
+          translateY: -size / 2,
+        }}
+        animate={{
+          scale: isHovering ? 1.2 : 1,
+        }}
         transition={{
           type: "spring",
-          stiffness: 300,
+          stiffness: 400,
           damping: 30,
-          mass: 0.5,
         }}
       />
+
+      {/* Outer ring */}
       <motion.div
-        className={`fixed top-0 left-0 w-8 h-8 border rounded-full pointer-events-none z-50 hidden md:block ${
-          isDark ? "border-orange-400" : "border-orange-500"
+        className={`fixed top-0 left-0 pointer-events-none z-50 hidden md:block rounded-full border ${
+          isDark ? "border-orange-400/60" : "border-orange-500/60"
         }`}
+        style={{
+          width: 32,
+          height: 32,
+          x: mouseX,
+          y: mouseY,
+          translateX: -16,
+          translateY: -16,
+        }}
         animate={{
-          x: mousePosition.x - 16,
-          y: mousePosition.y - 16,
           scale: isHovering ? 1.5 : 1,
           opacity: isHovering ? 0.8 : 0.4,
         }}
         transition={{
           type: "spring",
-          stiffness: 200,
+          stiffness: 300,
           damping: 25,
-          mass: 0.5,
         }}
       />
     </>

@@ -1,87 +1,90 @@
-import React, { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import React, { useEffect, useRef } from "react"
+import { motion, useAnimation } from "framer-motion"
 
 const ServicesCarousel = ({ isDark, language }) => {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const controls = useAnimation()
+  const containerRef = useRef(null)
 
   // Логотипы компаний в разных форматах (квадратные и прямоугольные)
   const companies = [
     {
       id: 1,
-      logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg",
-      format: "rectangular"
+      logo: "https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png",
+      format: "square",
+      name: "Docker",
     },
     {
       id: 2,
-      logo: "https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png",
-      format: "square"
+      logo: "https://www.jenkins.io/images/logos/jenkins/jenkins.svg",
+      format: "square",
+      name: "Jenkins",
     },
     {
       id: 3,
-      logo: "https://kubernetes.io/images/kubernetes-horizontal-color.png", 
-      format: "rectangular"
+      logo: "https://www.datocms-assets.com/2885/1629941242-logo-terraform-main.svg",
+      format: "square",
+      name: "Terraform",
     },
     {
       id: 4,
-      logo: "https://www.jenkins.io/images/logos/jenkins/jenkins.svg",
-      format: "square"
+      logo: "https://grafana.com/static/img/menu/grafana2.svg",
+      format: "rectangular",
+      name: "Grafana",
     },
     {
       id: 5,
-      logo: "https://www.datocms-assets.com/2885/1629941242-logo-terraform-main.svg",
-      format: "square"
+      logo: "https://about.gitlab.com/images/press/logo/svg/gitlab-logo-gray-rgb.svg",
+      format: "rectangular",
+      name: "GitLab",
     },
     {
       id: 6,
-      logo: "https://prometheus.io/assets/prometheus_logo_grey.svg",
-      format: "square"
-    },
-    {
-      id: 7,
-      logo: "https://grafana.com/static/img/menu/grafana2.svg",
-      format: "rectangular"
-    },
-    {
-      id: 8,
-      logo: "https://about.gitlab.com/images/press/logo/svg/gitlab-logo-gray-rgb.svg",
-      format: "rectangular"
-    },
-    {
-      id: 9,
       logo: "https://www.redhat.com/cms/managed-files/Logo-Red_Hat-OpenShift-A-Standard-RGB.svg",
-      format: "rectangular"
+      format: "rectangular",
+      name: "OpenShift",
     },
-    {
-      id: 10,
-      logo: "https://www.nginx.com/wp-content/uploads/2018/08/NGINX-logo-rgb-large.png",
-      format: "rectangular"
-    }
   ]
 
   const content = {
     en: {
       title: "Technologies & Services",
-      subtitle: "Tools and platforms I work with professionally"
+      subtitle: "Tools and platforms I work with professionally",
     },
     ru: {
       title: "Обслуживал",
-      subtitle: "Инструменты и платформы, с которыми работаю профессионально"
-    }
+      subtitle: "Инструменты и платформы, с которыми работаю профессионально",
+    },
   }
 
   const t = content[language]
 
-  // Непрерывная плавная анимация
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % companies.length)
-    }, 2500)
+  // Конфигурация анимации
+  const itemWidth = 220 // 200px width + 20px gap
+  const totalWidth = companies.length * itemWidth
 
-    return () => clearInterval(interval)
-  }, [companies.length])
-
-  // Дублируем логотипы для бесконечной прокрутки
+  // Дублируем логотипы для бесконечной прокрутки (минимум 3 копии для плавности)
   const duplicatedCompanies = [...companies, ...companies, ...companies]
+
+  // Непрерывная бесконечная анимация
+  useEffect(() => {
+    const startAnimation = async () => {
+      // Начинаем с позиции одного полного набора (чтобы избежать видимых скачков)
+      await controls.set({ x: -totalWidth })
+
+      // Запускаем бесконечную анимацию
+      controls.start({
+        x: -totalWidth * 2, // Двигаемся к концу второго набора
+        transition: {
+          duration: companies.length * 3, // 3 секунды на компанию
+          ease: "linear",
+          repeat: Infinity,
+          repeatType: "loop",
+        },
+      })
+    }
+
+    startAnimation()
+  }, [controls, totalWidth, companies.length])
 
   return (
     <section className="py-20 px-6 relative overflow-hidden" id="services">
@@ -106,51 +109,54 @@ const ServicesCarousel = ({ isDark, language }) => {
           {t.subtitle}
         </motion.p>
 
-        {/* Плавная карусель в стиле Zabbix */}
-        <div className="relative overflow-hidden">
+        {/* Плавная карусель с паузой при наведении */}
+        <div className="relative overflow-hidden" ref={containerRef}>
           <motion.div
-            className="flex gap-8 md:gap-12"
-            animate={{
-              x: `${-currentIndex * (200 + 32)}px` // 200px ширина + 32px gap
-            }}
-            transition={{
-              duration: 2.5,
-              ease: [0.25, 0.46, 0.45, 0.94] // cubic-bezier для плавности
-            }}
+            className="flex gap-5"
+            animate={controls}
             style={{
-              width: `${duplicatedCompanies.length * (200 + 32)}px`
+              width: `${duplicatedCompanies.length * itemWidth}px`,
+              willChange: "transform",
             }}
           >
             {duplicatedCompanies.map((company, index) => (
               <motion.div
-                key={`${company.id}-${Math.floor(index / companies.length)}`}
+                key={`${company.id}-${Math.floor(
+                  index / companies.length
+                )}-${index}`}
                 className="flex-shrink-0"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
+                whileHover={{
+                  scale: 1.05,
+                  transition: { duration: 0.2 },
+                }}
+                style={{ width: "200px" }}
               >
                 <div
-                  className={`${
-                    company.format === "square" ? "w-24 h-24" : "w-32 h-20"
-                  } ${
+                  className={`w-full h-32 ${
                     isDark
-                      ? "bg-gray-800/30 border border-gray-700/30"
-                      : "bg-white/80 border border-gray-200/50"
-                  } rounded-xl backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300 hover:shadow-lg gpu-accelerated`}
-                  style={{
-                    width: "200px",
-                    height: "120px"
-                  }}
+                      ? "bg-gray-800/40 border border-gray-700/40 hover:bg-gray-800/60 hover:border-gray-600/60"
+                      : "bg-white/90 border border-gray-200/60 hover:bg-white hover:border-gray-300/80"
+                  } rounded-2xl backdrop-blur-sm flex items-center justify-center p-6 transition-all duration-300 hover:shadow-xl group cursor-pointer`}
+                  title={company.name}
                 >
                   <img
                     src={company.logo}
-                    alt={`Company ${company.id} logo`}
+                    alt={`${company.name} logo`}
                     className={`max-w-full max-h-full object-contain filter transition-all duration-300 ${
-                      isDark ? "brightness-90 hover:brightness-110" : "hover:brightness-95"
+                      isDark
+                        ? "brightness-90 group-hover:brightness-110"
+                        : "brightness-100 group-hover:brightness-90"
                     }`}
                     style={{
-                      filter: company.logo.includes('prometheus') || company.logo.includes('gitlab') ? 
-                        (isDark ? 'invert(1) brightness(0.9)' : 'none') : 'none'
+                      filter:
+                        company.logo.includes("prometheus") ||
+                        company.logo.includes("gitlab")
+                          ? isDark
+                            ? "invert(1) brightness(0.9)"
+                            : "none"
+                          : "none",
                     }}
+                    loading="lazy"
                   />
                 </div>
               </motion.div>
@@ -174,21 +180,28 @@ const ServicesCarousel = ({ isDark, language }) => {
           />
         </div>
 
-        {/* Индикатор прогресса */}
-        <div className="flex justify-center mt-8">
-          <div
-            className={`w-64 h-1 rounded-full overflow-hidden ${
-              isDark ? "bg-gray-700" : "bg-gray-200"
-            }`}
-          >
-            <motion.div
-              className="h-full bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full"
-              initial={{ width: "0%" }}
-              animate={{
-                width: `${((currentIndex % companies.length) + 1) * (100 / companies.length)}%`
-              }}
-              transition={{ duration: 2.5, ease: "easeInOut" }}
-            />
+        {/* Улучшенный индикатор прогресса */}
+        <div className="flex justify-center mt-12">
+          <div className="flex items-center gap-4">
+            <div
+              className={`w-72 h-1.5 rounded-full overflow-hidden ${
+                isDark ? "bg-gray-700/50" : "bg-gray-200"
+              }`}
+            >
+              <motion.div
+                className="h-full bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 rounded-full"
+                initial={{ x: "-100%" }}
+                animate={{
+                  x: ["0%", "100%"],
+                  transition: {
+                    duration: companies.length * 3,
+                    ease: "linear",
+                    repeat: Infinity,
+                  },
+                }}
+                style={{ width: "30%" }}
+              />
+            </div>
           </div>
         </div>
       </div>

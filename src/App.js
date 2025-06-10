@@ -216,18 +216,6 @@ const App = () => {
       {/* Custom Magnetic Cursor */}
       <MagneticCursor isDark={isDark} />
 
-      {/* Enhanced Animated Background Effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div
-          className={`neural-network-orange gpu-accelerated ${
-            isDark ? "opacity-30" : "opacity-15"
-          }`}
-        />
-        <div className="floating-particles-orange gpu-accelerated" />
-        <div className="light-particles gpu-accelerated" />
-        <div className="geometric-shapes gpu-accelerated" />
-      </div>
-
       {/* Hero Section */}
       <section
         className="relative min-h-screen flex items-center justify-center overflow-hidden"

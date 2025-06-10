@@ -1,8 +1,10 @@
 import React, { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Github, ExternalLink, Code, Star, Users } from "lucide-react"
+import Card from "../ui/Card"
+import Badge from "../ui/Badge"
 
-const EnhancedProjectCard = ({ project, index, isDark }) => {
+const ProjectCard = ({ project, index, isDark }) => {
   const [isHovered, setIsHovered] = useState(false)
 
   const projectMetrics = {
@@ -12,35 +14,21 @@ const EnhancedProjectCard = ({ project, index, isDark }) => {
   }
 
   const metrics = projectMetrics[index] || {
-    stars: Math.floor(Math.random() * 200) + 50,
-    commits: Math.floor(Math.random() * 300) + 100,
-    contributors: Math.floor(Math.random() * 8) + 2,
+    stars: 0,
+    commits: 0,
+    contributors: 0,
   }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      className="group relative overflow-hidden"
+      transition={{ duration: 0.8, delay: index * 0.2 }}
+      className="group relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <motion.div
-        className={`p-6 h-full backdrop-blur-md rounded-3xl border transition-all duration-500 cursor-pointer gpu-accelerated ${
-          isDark
-            ? "bg-gray-800/50 border-gray-700/50 hover:border-orange-400/30 hover:shadow-orange-500/20"
-            : "bg-white/90 border-gray-200/50 hover:border-orange-400/50 hover:shadow-orange-500/30"
-        }`}
-        whileHover={{
-          scale: 1.02,
-          y: -8,
-          rotateX: 5,
-          rotateY: 5,
-        }}
-        style={{ transformStyle: "preserve-3d" }}
-      >
+      <Card isDark={isDark} hover={true} className="h-full cursor-pointer">
         {/* Animated Background Overlay */}
         <motion.div
           className="absolute inset-0 rounded-3xl"
@@ -64,18 +52,12 @@ const EnhancedProjectCard = ({ project, index, isDark }) => {
                 className={`w-16 h-16 rounded-2xl border-2 shadow-md ${
                   isDark ? "border-gray-600" : "border-gray-200"
                 }`}
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
               />
-              <div
-                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  isDark
-                    ? "bg-green-500/20 text-green-300"
-                    : "bg-green-500/10 text-green-600"
-                }`}
-              >
+              <Badge variant="success" size="xs">
                 Active
-              </div>
+              </Badge>
             </div>
 
             {/* Project Metrics */}
@@ -116,7 +98,7 @@ const EnhancedProjectCard = ({ project, index, isDark }) => {
             </AnimatePresence>
           </div>
 
-          {/* Project Title with Gradient */}
+          {/* Project Title */}
           <motion.h3
             className={`text-xl font-bold mb-3 transition-colors ${
               isDark ? "text-gray-100" : "text-gray-900"
@@ -128,7 +110,7 @@ const EnhancedProjectCard = ({ project, index, isDark }) => {
             {project.name}
           </motion.h3>
 
-          {/* Enhanced Description */}
+          {/* Description */}
           <p
             className={`mb-4 text-sm leading-relaxed ${
               isDark ? "text-gray-300" : "text-gray-600"
@@ -137,25 +119,16 @@ const EnhancedProjectCard = ({ project, index, isDark }) => {
             {project.description}
           </p>
 
-          {/* Tech Stack with Enhanced Styling */}
+          {/* Tech Stack */}
           <div className="flex flex-wrap gap-2 mb-6">
             {project.tech.map((tech, techIndex) => (
-              <motion.span
-                key={techIndex}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  isDark
-                    ? "bg-orange-500/20 text-orange-300 hover:bg-orange-500/30"
-                    : "bg-orange-500/10 text-orange-600 hover:bg-orange-500/20"
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
+              <Badge key={techIndex} variant="default" size="xs" hover={true}>
                 {tech}
-              </motion.span>
+              </Badge>
             ))}
           </div>
 
-          {/* Enhanced Action Buttons */}
+          {/* Action Buttons */}
           <div className="flex gap-3">
             <motion.a
               href={project.link}
@@ -195,9 +168,9 @@ const EnhancedProjectCard = ({ project, index, isDark }) => {
             </motion.a>
           </div>
         </div>
-      </motion.div>
+      </Card>
     </motion.div>
   )
 }
 
-export default EnhancedProjectCard
+export default ProjectCard

@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Github, ExternalLink, Code, Zap, Users, Star } from "lucide-react"
+import { Github, ExternalLink, Code, Star, Users } from "lucide-react"
 
 const EnhancedProjectCard = ({ project, index, isDark }) => {
   const [isHovered, setIsHovered] = useState(false)
@@ -27,7 +27,7 @@ const EnhancedProjectCard = ({ project, index, isDark }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <motion.div
-        className={`p-6 h-full backdrop-blur-md rounded-3xl border transition-all duration-500 cursor-pointer ${
+        className={`p-6 h-full backdrop-blur-md rounded-3xl border transition-all duration-500 cursor-pointer gpu-accelerated ${
           isDark
             ? "bg-gray-800/50 border-gray-700/50 hover:border-orange-400/30 hover:shadow-orange-500/20"
             : "bg-white/90 border-gray-200/50 hover:border-orange-400/50 hover:shadow-orange-500/30"

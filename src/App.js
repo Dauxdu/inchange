@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Moon, Sun, Globe, Github, ExternalLink, Mail, Zap } from "lucide-react"
+import { motion } from "framer-motion"
+import { Moon, Sun, Globe, Github, Mail, Zap } from "lucide-react"
 import EnhancedProjectCard from "./components/EnhancedProjectCard"
 import MagneticCursor from "./components/MagneticCursor"
+import ServicesCarousel from "./components/ServicesCarousel"
 import { ProgressiveLoader, SkeletonCard } from "./components/LoadingStates"
 import "./App.css"
 import LogoLoader from "./components/LogoLoader"
@@ -218,13 +219,13 @@ const App = () => {
       {/* Enhanced Animated Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div
-          className={`neural-network-orange ${
+          className={`neural-network-orange gpu-accelerated ${
             isDark ? "opacity-30" : "opacity-15"
           }`}
         />
-        <div className="floating-particles-orange" />
-        <div className="light-particles" />
-        <div className="geometric-shapes" />
+        <div className="floating-particles-orange gpu-accelerated" />
+        <div className="light-particles gpu-accelerated" />
+        <div className="geometric-shapes gpu-accelerated" />
       </div>
 
       {/* Hero Section */}
@@ -240,20 +241,20 @@ const App = () => {
               transition={{ duration: 1, ease: "easeOut" }}
               className="mb-8"
             >
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center mb-8">
                 <motion.div
-                  className={`p-6 rounded-2xl ${
+                  className={`p-8 rounded-3xl ${
                     isDark
                       ? "bg-gray-800/50 border border-gray-700/50"
                       : "bg-white/80 border border-gray-200/50 shadow-lg"
                   } backdrop-blur-md`}
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <img
                     src={logoUrl}
                     alt="INCHANGE.DEV Logo"
-                    className="w-16 h-16 mx-auto"
+                    className="w-24 h-24 mx-auto"
                   />
                 </motion.div>
               </div>
@@ -423,6 +424,9 @@ const App = () => {
           </div>
         </div>
       </section>
+
+      {/* Services Carousel Section */}
+      <ServicesCarousel isDark={isDark} language={language} />
 
       {/* Enhanced Projects */}
       <section className="py-20 px-6 relative" id="projects">

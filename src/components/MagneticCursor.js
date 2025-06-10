@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import { motion } from "framer-motion"
 
 const MagneticCursor = ({ isDark }) => {
@@ -6,12 +6,20 @@ const MagneticCursor = ({ isDark }) => {
   const [isHovering, setIsHovering] = useState(false)
   const [cursorVariant, setCursorVariant] = useState("default")
 
+  // Debounce mouse movement for better performance
+  const throttledMouseMove = useCallback(
+    throttle((x, y) => {
+      setMousePosition({ x, y })
+    }, 16), // ~60fps
+    []
+  )
+
   useEffect(() => {
     const mouseMove = (e) => {
-      setMousePosition({
-        x: e.clientX,
-        y: e.clientY,
-      })
+      // Add boundary checks to prevent cursor from jumping
+      const x = Math.max(0, Math.min(window.innerWidth, e.clientX))
+      const y = Math.max(0, Math.min(window.innerHeight, e.clientY))
+      throttledMouseMove(x, y)
     }
 
     const handleMouseOver = (e) => {
@@ -21,6 +29,8 @@ const MagneticCursor = ({ isDark }) => {
           setCursorVariant("button")
         } else if (e.target.matches("a")) {
           setCursorVariant("link")
+        } else {
+          setCursorVariant("hover")
         }
       }
     }
@@ -32,16 +42,24 @@ const MagneticCursor = ({ isDark }) => {
       }
     }
 
+    const handleMouseLeave = () => {
+      // Reset cursor when mouse leaves window
+      setIsHovering(false)
+      setCursorVariant("default")
+    }
+
     window.addEventListener("mousemove", mouseMove)
     document.addEventListener("mouseover", handleMouseOver)
     document.addEventListener("mouseout", handleMouseOut)
+    document.addEventListener("mouseleave", handleMouseLeave)
 
     return () => {
       window.removeEventListener("mousemove", mouseMove)
       document.removeEventListener("mouseover", handleMouseOver)
       document.removeEventListener("mouseout", handleMouseOut)
+      document.removeEventListener("mouseleave", handleMouseLeave)
     }
-  }, [])
+  }, [throttledMouseMove])
 
   const getOrangeColor = (variant) => {
     switch (variant) {
@@ -49,6 +67,8 @@ const MagneticCursor = ({ isDark }) => {
         return "#ea580c" // orange-600
       case "link":
         return "#fb923c" // orange-400
+      case "hover":
+        return "#f97316" // orange-500
       default:
         return "#f97316" // orange-500
     }
@@ -76,6 +96,13 @@ const MagneticCursor = ({ isDark }) => {
       backgroundColor: getOrangeColor("link"),
       mixBlendMode: isDark ? "difference" : "multiply",
     },
+    hover: {
+      x: mousePosition.x - 10,
+      y: mousePosition.y - 10,
+      scale: 1.3,
+      backgroundColor: getOrangeColor("hover"),
+      mixBlendMode: isDark ? "difference" : "multiply",
+    },
   }
 
   return (
@@ -86,8 +113,9 @@ const MagneticCursor = ({ isDark }) => {
         animate={cursorVariant}
         transition={{
           type: "spring",
-          stiffness: 500,
-          damping: 28,
+          stiffness: 300,
+          damping: 30,
+          mass: 0.5,
         }}
       />
       <motion.div
@@ -102,12 +130,26 @@ const MagneticCursor = ({ isDark }) => {
         }}
         transition={{
           type: "spring",
-          stiffness: 300,
-          damping: 20,
+          stiffness: 200,
+          damping: 25,
+          mass: 0.5,
         }}
       />
     </>
   )
+}
+
+// Throttle function for performance optimization
+function throttle(func, wait) {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
 }
 
 export default MagneticCursor

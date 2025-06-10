@@ -1,6 +1,6 @@
 import React from "react"
 import { motion } from "framer-motion"
-import { Calendar, MapPin, ArrowRight } from "lucide-react"
+import { Calendar, ArrowRight } from "lucide-react"
 
 const TimelineExperience = ({ companies, isDark }) => {
   return (

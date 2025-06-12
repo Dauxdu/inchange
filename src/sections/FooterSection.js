@@ -109,7 +109,9 @@ const FooterSection = ({
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          © 2025 INCHANGE.DEV. Building reliable infrastructure with passion.
+          <p>© 2025 INCHANGE.DEV. All rights reserved.</p>
+
+          <p>Built with React, Tailwind CSS, and Framer Motion.</p>
         </motion.div>
       </div>
     </footer>

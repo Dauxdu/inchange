@@ -5,8 +5,6 @@ import Button from "../ui/Button"
 import LogoLoader from "../components/LogoLoader"
 
 const HeroSection = ({ content, sectionsLoaded, isDark, scrollToSection }) => {
-  const logoUrl = LogoLoader["logo"]
-
   return (
     <section
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
@@ -42,7 +40,7 @@ const HeroSection = ({ content, sectionsLoaded, isDark, scrollToSection }) => {
               transition={{ type: "spring", stiffness: 300 }}
             >
               <img
-                src={logoUrl}
+                src={LogoLoader[isDark ? "inchange_white" : "inchange_dark"]}
                 alt="INCHANGE.DEV Logo"
                 className="w-24 h-24 mx-auto"
               />
@@ -103,7 +101,7 @@ const HeroSection = ({ content, sectionsLoaded, isDark, scrollToSection }) => {
         </motion.div>
       </div>
 
-      {/* Enhanced Scroll Indicator */}
+      {/* Scroll Indicator */}
       <motion.div
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
         animate={{ y: [0, 10, 0] }}

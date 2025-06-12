@@ -17,8 +17,8 @@ const Button = ({
     primary:
       "bg-gradient-to-r from-orange-500 to-red-600 text-white hover:shadow-2xl hover:shadow-orange-500/25",
     secondary:
-      "border backdrop-blur-sm border-gray-300 text-gray-700 hover:bg-gray-100",
-    ghost: "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
+      "border backdrop-blur-sm border-gray-300 text-white hover:bg-gray-100 hover:text-gray-900",
+    ghost: "text-white hover:text-gray-100 hover:bg-gray-100/10",
   }
 
   const sizes = {

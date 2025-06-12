@@ -1,8 +1,8 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { Moon, Sun, Globe, Github, Mail } from "lucide-react"
-import Button from "../ui/Button"
-import SocialIcon from "../ui/SocialIcon"
+import Button from "../components/Button"
+import SocialIcon from "../components/SocialIcon"
 
 const TelegramIcon = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -48,7 +48,7 @@ const FooterSection = ({
               size="sm"
               className={`magnetic-element ${
                 isDark
-                  ? "bg-gray-700/50 hover:bg-gray-600/50 text-gray-300"
+                  ? "bg-gray-700/50 hover:bg-gray-600/50 text-white"
                   : "bg-gray-100 hover:bg-gray-200 text-gray-700"
               }`}
             >

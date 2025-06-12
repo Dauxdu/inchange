@@ -1,5 +1,5 @@
 import React from "react"
-import CustomCursor from "../components/CustomCursor"
+import CustomCursor from "./CustomCursor"
 
 const PageLayout = ({ children, isDark }) => {
   return (

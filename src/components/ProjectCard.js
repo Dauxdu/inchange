@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Github, ExternalLink, Code, Star, Users } from "lucide-react"
-import Card from "../ui/Card"
-import Badge from "../ui/Badge"
+import Card from "./Card"
+import Badge from "./Badge"
 
 const ProjectCard = ({ project, index, isDark }) => {
   const [isHovered, setIsHovered] = useState(false)
@@ -136,7 +136,7 @@ const ProjectCard = ({ project, index, isDark }) => {
               rel="noopener noreferrer"
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all flex-1 justify-center ${
                 isDark
-                  ? "bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 hover:text-white"
+                  ? "bg-gray-700/50 hover:bg-gray-600/50 text-white hover:text-white"
                   : "bg-gray-200 hover:bg-gray-300 text-gray-700 hover:text-gray-900"
               }`}
               whileHover={{ scale: 1.05 }}

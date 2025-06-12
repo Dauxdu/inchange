@@ -1,7 +1,7 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { Zap } from "lucide-react"
-import Button from "../ui/Button"
+import Button from "../components/Button"
 import LogoLoader from "../components/LogoLoader"
 
 const HeroSection = ({ content, sectionsLoaded, isDark, scrollToSection }) => {
@@ -92,7 +92,7 @@ const HeroSection = ({ content, sectionsLoaded, isDark, scrollToSection }) => {
             variant="secondary"
             size="lg"
             className={
-              isDark ? "border-gray-600 text-gray-300 hover:bg-gray-700/50" : ""
+              isDark ? "border-gray-600 text-white hover:bg-gray-700/50" : ""
             }
           >
             <Zap className="w-4 h-4 sm:w-5 sm:h-5" />

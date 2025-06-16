@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import CustomCursor from "./components/CustomCursor"
 import TechnologiesCarousel from "./components/TechnologiesCarousel"
 import HeroSection from "./sections/HeroSection"
 import ExperienceSection from "./sections/ExperienceSection"
@@ -64,9 +63,6 @@ const App = () => {
         isDark ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
       }`}
     >
-      {/* Custom Cursor */}
-      <CustomCursor isDark={isDark} />
-
       {/* Hero Section */}
       <HeroSection
         content={content}

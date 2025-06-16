@@ -63,7 +63,7 @@ const ExperienceSection = ({ content, isDark }) => {
                       <Badge
                         variant="gradient"
                         size="md"
-                        className="mt-4 md:mt-0 min-w-[140px] text-center font-medium"
+                        className="mt-4 md:mt-0 min-w-[200px] text-center font-medium"
                         hover={false}
                       >
                         {company.years}
